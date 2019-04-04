@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+  <meta charset="utf-8">
+  <title>图片懒加载</title>
+</head>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .ct{
+        width: 600px;
+        margin: 0 auto;
+    }
+    .ct>li{
+        float: left;
+        margin: 10px;
+    }
+    .ct>li img{
+        width: 240px;
+        height: 180px;
+    }
+    
+  </style>
+<body>
+  <ul class="ct">  
+   <!--  这里所有img的初始src设置为同一个占位图而不是空的原因是,为空浏览器可能会加载失败显示,影响用户体验,设置同一个占位图,可以只加载一次其它走缓存 -->
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/1.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/1.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/2.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/3.jpg" /></a></li>
+        <li><a href="#"><img id=a src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/4.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/5.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/6.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/7.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/8.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/9.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/10.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/11.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/12.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/13.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/14.jpg" /></a></li>
+        <li><a href="#"><img id=b src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/15.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/16.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/2.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/3.jpg" /></a></li>
+        <li><a href="#"><img id=a src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/4.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/5.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/6.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/7.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/8.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/9.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/10.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/11.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/12.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/13.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/14.jpg" /></a></li>
+        <li><a href="#"><img id=b src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/15.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/16.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/2.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/3.jpg" /></a></li>
+        <li><a href="#"><img id=a src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/4.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/5.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/6.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/7.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/8.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/9.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/10.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/11.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/12.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/13.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/14.jpg" /></a></li>
+        <li><a href="#"><img id=b src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/15.jpg" /></a></li>
+        <li><a href="#"><img src="http://img.zcool.cn/community/01e9875542c6380000019ae955160b.jpg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/16.jpg" /></a></li>
+    </ul>
+    <script>
+      lazyRender () //定义一个懒加载函数,先执行一遍保证初始图片加载
+      var clock 
+      $(window).on('scroll',function(){
+        if (clock){
+          clearTimeout(clock)
+        }
+        clock = setTimeout(function(){ //定义一个clock计时器,滚动窗口后300ms触发懒加载,如果300ms内又触发滚动,则清除上一个闹钟重新设置一个300ms闹钟
+          lazyRender()
+        },300)
+      })
+      
+      function lazyRender() {
+        $('.ct img').each(function(){
+          if(checkShow($(this)) && !isLoaded($(this)) ){
+            loadImg($(this))
+          }
+        })
+      }
+      
+      function checkShow($img){               //判断是否出现在窗口可视范围内
+        var scrollTop = $(window).scrollTop()  //滚动高度
+        var windowHeight = $(window).height()   //窗口高度
+        var offsetTop = $img.offset().top //页面顶点至目标的高度
+        if(offsetTop < scrollTop + windowHeight && offsetTop > scrollTop)
+          {
+            return true
+          }
+        return false
+      }
+      
+      function isLoaded($img){
+        return $img.attr('data-src') === $img.attr('src')
+      }
+      function loadImg($img){
+        $img.attr('src',$img.attr('data-src'))
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+  <meta charset="utf-8">
+  <title>轮播</title>
+</head>
+<style>
+  ul,li{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.carousel {
+  position: relative;
+  width: 320px;
+  height: 180px;
+  overflow: hidden;
+}
+.carousel .img-ct {
+  position: absolute; /* 注意这里容器宽度不应该写死,如果后面加入新的图片得修改值 */
+  overflow: hidden; /* 形成BFC */
+
+}
+.carousel .img-ct>li{
+  float: left;
+}
+.carousel .img-ct img{
+  width: 320px;
+  height: 180px;
+}
+.carousel .arrow{
+  position: absolute;
+  top: 50%;
+  margin-top: -15px;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  line-height: 30px;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+}
+.carousel .arrow:hover {
+  opacity: .5;
+}
+.carousel .pre{
+  left: 10px;
+}
+.carousel .next{
+  right: 10px;
+}
+
+.carousel .bullet{
+  position: absolute; /* 用了绝对定位,用margin 0 auto失效 */
+  bottom: 10px;
+  width: 100%;
+  font-size: 0;  /*  因为会有空隙所以设为font-size: 0 然后子元素设margin设回来 */
+  z-index: 1;
+  text-align: center;
+}
+.carousel .bullet>li{
+  display: inline-block;
+  width: 30px;
+  height: 5px;
+  margin: 0 3px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.carousel .bullet>li.active{
+  background: #ccc;
+}
+</style>
+<body>
+  <div class="carousel">
+      <ul class="img-ct">
+          <li data-id=0><a href="#"><img src="https://upload-images.jianshu.io/upload_images/13839130-3675d7d648c9bddb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></a></li>
+          <li data-id=1><a href="#"><img src="https://upload-images.jianshu.io/upload_images/13839130-aaf1f00519025ca3.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></a></li>
+          <li data-id=2><a href="#"><img src="https://upload-images.jianshu.io/upload_images/13839130-f46c5c7a0ad4dc01.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></a></li>
+          <li data-id=3><a href="#"><img src="https://upload-images.jianshu.io/upload_images/13839130-c928188146dd76ee.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></a></li>
+      </ul>
+      <a href="#" class="pre arrow"><</a>  
+      <a href="#" class="next arrow">></a>
+      <ul class="bullet">
+          <li class="active"></li>
+          <li></li>
+          <li></li>
+          <li></li>
+      </ul>
+  </div>
+</body>
+
+<script>
+  var Carousel = (function(){               
+   function _Carousel($ct){
+    this.$ct = $ct
+    this.init()
+    this.bind()
+  }
+
+  _Carousel.prototype.init = function(){
+    var $imgCt = this.$imgCt = this.$ct.find('.img-ct'),    //从传入的容器$ct里面找
+        $imgs = this.$imgs = this.$ct.find('.img-ct>li'),  //注意这里后面即使加入新的dom元素,由于dom缓存机制,$imgs里还是四个li,如果重新查$('.carousel .img-ct > li')就会有五个li
+        $preBtn = this.$preBtn = this.$ct.find('.pre'),
+        $nextBtn = this.$nextBtn = this.$ct.find('.next'),
+        $bullets = this.$bullets = this.$ct.find('.bullet li')
+
+    this.pageIndex = 0 //声明一个变量表示当前所在的图片上,初始为第一张
+
+    this.isAnimate = false //状态锁防止用户重复点击
+
+    this.imgCount = $imgs.length  //此时为4,有四个li
+    console.log(this.imgCount)
+    this.imgWidth = $imgs.width()
+    $imgCt.append($imgs.first().clone())  //拷贝第一个放在img-ct最后
+    $imgCt.prepend($imgs.last().clone())  //拷贝最后一个放在img-ct最前面
+    $imgCt.width((this.imgCount+2) * this.imgWidth) //设置父容器宽度,注意这里加2是因为dom的缓存机制父容器长度还是原来的4    
+    $imgCt.css({left: -this.imgWidth})  //显示第一张
+  }
+
+  _Carousel.prototype.bind = function(){   //init和bind是不同函数,变量无法共用,需要将变量保存到this里来获取
+    //点击左右按钮,轮播图片
+    var _this = this
+    this.$nextBtn.click(function(){
+      _this.playNext()                   
+    })
+    this.$preBtn.click(function(){
+      _this.playPre()
+    })
+
+    //点击底部按钮 跳动图片
+    this.$bullets.click(function(){
+      _this.pageIndex = $(this).index()  //所点击的bullet的下标
+      _this.$imgCt.animate({
+        left: -_this.imgWidth*(_this.pageIndex + 1)
+      }) 
+      _this.setBullet()
+    })
+
+    // 自动轮播
+    this.autoPlay ()
+
+    // 鼠标移入，停止轮播
+    this.$ct.mouseover(function () {
+      clearInterval(_this.timer)
+    })
+    // 鼠标移出，轮播
+    this.$ct.mouseout(function () {
+      _this.autoPlay ()
+    })
+
+  }
+
+  _Carousel.prototype.playNext = function(){
+    var _this = this
+    if(this.isAnimate) return;     //如果是动画中,直接return掉
+    this.isAnimate = true          //用户点击一次变为true,上锁,后续在锁关闭前用户点击无效
+    this.$imgCt.animate({
+      left: '-='+_this.imgWidth //之前已经移动-imgWidth,所以这里是'-='+imgWidth 
+    },function(){
+      _this.pageIndex ++         //只要点击next键,pageIndex(对应图片位置)加1
+      if(_this.pageIndex === _this.imgCount){   //当pageIndex加到数量最大值时,重设为0,并返回第一张
+        _this.pageIndex = 0
+        _this.$imgCt.css({left: -_this.imgWidth})
+      }
+      _this.setBullet()
+      _this.isAnimate = false  //动画完成关闭锁,用户可点击,意思是在上锁为true的情况下,用户重复点击无效
+    })
+  }
+
+  _Carousel.prototype.playPre = function(){
+    var _this = this
+    if(this.isAnimate) return;     
+    this.isAnimate = true          
+    this.$imgCt.animate({
+      left: '+='+_this.imgWidth //同理
+    },function(){
+      _this.pageIndex --
+      if(_this.pageIndex < 0){
+        _this.pageIndex = _this.imgCount - 1  //注意这里要减1因为是从0计数
+        _this.$imgCt.css({left: -(_this.imgCount*_this.imgWidth)})
+      }  
+      _this.setBullet()
+      _this.isAnimate = false
+    })
+  }
+
+
+  _Carousel.prototype.setBullet = function(){                    //底部按钮点击效果设置
+    var _this = this
+    this.$bullets.removeClass('active').eq(_this.pageIndex).addClass('active')
+  }
+
+
+  _Carousel.prototype.autoPlay = function(){                     // 自动轮播函数封装
+    // 自动向右轮播,时隔2s
+    var _this = this
+    _this.timer = setInterval(function(){
+      _this.playNext()
+    },2000)
+  }
+
+  return {
+    init: function($ct){
+      $ct.each(function(index,node){   //node是dom节点即单独的$ct.each dom元素,index是选择器的位置
+        new _Carousel($(node))           //因为node是dom元素所以需要加$
+      })
+    } 
+  }
+})()
+
+Carousel.init($('.carousel'))
+</script>
+</html>
